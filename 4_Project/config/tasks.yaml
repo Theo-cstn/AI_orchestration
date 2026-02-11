@@ -1,0 +1,15 @@
+research_task:
+  description: >
+    Analyse les informations disponibles dans ce mail : {email_content}.
+    Cherche des indices sur le sérieux de l'expéditeur.
+  expected_output: >
+    Un court rapport sur la crédibilité de l'expéditeur.
+  agent: researcher
+
+classification_task:
+  description: >
+    En te basant sur le rapport du chercheur, décide si nous devons répondre 
+    favorablement à ce mail : {email_content}.
+  expected_output: >
+    Un verdict clair (PERTINENT ou NON PERTINENT) avec une justification.
+  agent: classifier
