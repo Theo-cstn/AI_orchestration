@@ -1,20 +1,51 @@
-# 2_Prompts/static_prompt.py
+from crewai import Agent, Task, Crew, Process, LLM
+from crewai_tools import SerperDevTool
 import os
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
-# On utilise le préfixe complet attendu par le nouveau SDK
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3-flash-preview", 
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+# Initialize the LLM with CrewAI's native Google support
+llm = LLM(
+    model="gemini-3-flash-preview",
+    provider="google",
+    api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-prompt = """
-Analyse le mail suivant et dis-moi s'il s'agit d'une demande de partenariat sérieuse (OUI ou NON) :
-'Bonjour, je suis influenceur tech et j'aimerais tester votre produit pour en faire une vidéo.'
-"""
+# Initialize Google Search tool
+search_tool = SerperDevTool()
 
-response = llm.invoke(prompt)
-print(f"Analyse du mail : {response.content}")
+# Create Agent
+research_agent = Agent(
+    role="Senior Research Analyst",
+    goal="Find accurate and up-to-date information from the web",
+    backstory=(
+        "You are an expert researcher skilled at using search engines "
+        "to gather reliable, current information."
+    ),
+    tools=[search_tool],
+    llm=llm,
+    verbose=True
+)
+
+# Create Task
+research_task = Task(
+    description=(
+        "Research the latest developments in AI agents in 2026 "
+        "and summarize the key trends."
+    ),
+    expected_output="A clear summary of the latest AI agent trends.",
+    agent=research_agent
+)
+
+# Create Crew
+crew = Crew(
+    agents=[research_agent],
+    tasks=[research_task],
+    process=Process.sequential,
+    verbose=True
+)
+
+# Run Crew
+result = crew.kickoff()
+print(result)
