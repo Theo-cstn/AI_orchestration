@@ -1,0 +1,53 @@
+retrieval_task:
+  description: >
+    Recherche dans le document PDF indexé les passages les plus pertinents 
+    pour répondre à la question suivante : {question}
+    
+    Utilise l'outil "Search PDF Vector Store" avec des requêtes précises.
+    Si une première recherche ne suffit pas, reformule et relance une recherche
+    complémentaire.
+    
+    Retourne les passages trouvés avec leurs numéros de page.
+  expected_output: >
+    Une liste structurée des passages les plus pertinents trouvés dans le document,
+    avec pour chacun :
+    - Le texte exact du passage
+    - Le numéro de page source
+    Minimum 3 passages distincts.
+  agent: pdf_retriever
+
+analysis_task:
+  description: >
+    À partir des passages fournis par le chercheur, réponds à la question : {question}
+    
+    Instructions :
+    1. Identifie les valeurs et données pertinentes dans les passages
+    2. Si la question implique un calcul (somme, moyenne, comparaison), effectue-le
+       explicitement et montre chaque étape
+    3. Formule une réponse claire et précise
+    4. Pour chaque élément de ta réponse, indique la page source
+  expected_output: >
+    Une réponse structurée contenant :
+    - La réponse directe à la question
+    - Le détail du raisonnement ou calcul effectué (si applicable)
+    - Les références aux pages sources pour chaque affirmation
+  agent: analyst
+
+verification_task:
+  description: >
+    Vérifie la réponse de l'analyste pour la question : {question}
+    
+    Contrôles à effectuer :
+    1. Chaque affirmation est-elle traceable à un passage source ?
+    2. Les calculs éventuels sont-ils corrects ?
+    3. La réponse répond-elle exactement à la question posée ?
+    4. Y a-t-il des informations inventées (hallucinations) ?
+    
+    Produis le rapport final validé avec les sources.
+  expected_output: >
+    Un rapport final contenant :
+    - STATUT : VALIDÉ ou À CORRIGER (avec raison)
+    - La réponse finale validée
+    - Les sources confirmées (page + extrait court)
+    - Un score de confiance : ÉLEVÉ / MOYEN / FAIBLE avec justification
+  agent: verifier
