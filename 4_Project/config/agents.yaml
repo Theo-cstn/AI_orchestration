@@ -6,6 +6,7 @@ researcher:
   backstory: >
     Tu es un expert en analyse de réputation. Ton travail est de déterminer 
     si l'expéditeur est une personne ou une entreprise réelle et sérieuse.
+  llm: gemini-3-flash-preview
 
 classifier:
   role: >
@@ -15,3 +16,4 @@ classifier:
   backstory: >
     Tu es un responsable des partenariats. Tu sais distinguer une proposition 
     de valeur réelle d'un spam ou d'une demande peu professionnelle.
+  llm: gemini-3-flash-preview

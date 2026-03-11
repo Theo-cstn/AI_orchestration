@@ -1,6 +1,15 @@
-from crewai import Agent, Crew, Process, Task
-from crewai.project import CrewBase, agent, crew, task
+from crewai import Agent, Crew, Process, Task, LLM
+from crewai.project import CrewBase, agent, task, crew
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+llm = LLM(
+    model="gemini-3-flash-preview",
+    provider="google",
+    api_key=os.getenv("GOOGLE_API_KEY")
+)
+
 
 @CrewBase
 class PartnershipCrew():
@@ -10,11 +19,11 @@ class PartnershipCrew():
 
     @agent
     def researcher(self) -> Agent:
-        return Agent(config=self.agents_config['researcher'], verbose=True)
+        return Agent(config=self.agents_config['researcher'], llm=llm,verbose=True)
 
     @agent
     def classifier(self) -> Agent:
-        return Agent(config=self.agents_config['classifier'], verbose=True)
+        return Agent(config=self.agents_config['classifier'], llm=llm, verbose=True)
 
     @task
     def research_task(self) -> Task:
@@ -32,3 +41,4 @@ class PartnershipCrew():
             process=Process.sequential,
             verbose=True,
         )
+        
